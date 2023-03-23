@@ -21,6 +21,26 @@ class GraphqlController < ApplicationController
 
   private
 
+  def query
+    params[:query]
+  end
+
+  def variables
+    prepare_variables params[:variables]
+  end
+
+  def operation_name
+    params[:operationName]
+  end
+
+  def context
+    if is_sign_in_request?
+      { sign_in: method(:sign_in) }
+    else
+      { current_user: current_user}
+    end
+  end
+
   # Handle variables in form data, JSON body, or a blank value
   def prepare_variables(variables_param)
     case variables_param
@@ -39,6 +59,26 @@ class GraphqlController < ApplicationController
     else
       raise ArgumentError, "Unexpected parameter: #{variables_param}"
     end
+  end
+
+  def unauthenticated_operation?
+    is_sign_in_request? || check_unauthenticated_queries
+  end
+
+  def check_unauthenticated_queries
+    unauthenticated_queries.any? do |query|
+      query.include? query
+    end
+  end
+
+  def unauthenticated_queries
+    %w[
+      IntrospectionQuery
+    ]
+  end
+
+  def is_sign_in_request?
+    query.include?('signup')
   end
 
   def handle_error_in_development(e)
