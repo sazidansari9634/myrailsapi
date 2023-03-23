@@ -1,4 +1,5 @@
-class GraphqlController < ApplicationController
+class GraphqlController < Api::BaseController
+  before_action :authenticate_user!, unless: :unauthenticated_operation?
   # If accessing from outside this domain, nullify the session
   # This allows for outside API access while preventing CSRF attacks,
   # but you'll have to authenticate your user separately
@@ -62,19 +63,19 @@ class GraphqlController < ApplicationController
   end
 
   def unauthenticated_operation?
-    is_sign_in_request? || check_unauthenticated_queries
-  end
+  #   is_sign_in_request? || check_unauthenticated_queries
+  # end
 
-  def check_unauthenticated_queries
-    unauthenticated_queries.any? do |query|
-      query.include? query
-    end
-  end
+  # def check_unauthenticated_queries
+  #   unauthenticated_queries.any? do |query|
+  #     query.include? query
+  #   end
+  # end
 
-  def unauthenticated_queries
-    %w[
-      IntrospectionQuery
-    ]
+  # def unauthenticated_queries
+  #   %w[
+  #     IntrospectionQuery
+  #   ]
   end
 
   def is_sign_in_request?

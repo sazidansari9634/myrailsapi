@@ -9,7 +9,7 @@ module Mutations
         field :message, String, null: true
 
         def resolve(**args)
-            user_signup_input = args[:candidate_invitation_input].to_h 
+            user_signup_input = args[:user_signup_input].to_h 
 
             user = User.create user_signup_input
             token = user.generate_jwt
